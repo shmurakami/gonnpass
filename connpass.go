@@ -1,5 +1,7 @@
 package gonnpass
 
+var Url = "https://connpass.com/api/v1/event/"
+
 type Option struct {
 	Id        uint
 	Keyword   string
