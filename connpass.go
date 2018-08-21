@@ -1,21 +1,7 @@
 package gonnpass
 
+// or use net/url ?
 var Url = "https://connpass.com/api/v1/event/"
-
-type Option struct {
-	Id        uint
-	Keyword   string
-	Month     string
-	Date      string
-	Name      string
-	Owner     string
-	Group     Group
-	GroupFlag uint
-	Offset    uint
-	Limit     uint
-	OrderFlag string
-	Order     uint
-}
 
 type Response struct {
 	//results_returned	整数	含まれる検索結果の件数	1
