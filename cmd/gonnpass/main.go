@@ -36,15 +36,15 @@ groups
  */
 
 var (
-	idFlag      = flag.Uint("i", 0, "Event ID")
+	idFlag      = flag.Int("i", 0, "Event ID")
 	keywordFlag = flag.String("k", "", "Search keyword")
 	monthFlag   = flag.String("m", "", "Search by month e.g. 201801")
 	dateFlag    = flag.String("d", "", "Search by date e.g. 20180101")
 	nameFlag    = flag.String("n", "", "Search by attendee nickname")
 	ownerFlag   = flag.String("o", "", "Search by owner nickname")
-	groupFlag   = flag.Uint("g", 0, "Search by group ID. Run './connpass groups get' to show groups")
-	offsetFlag  = flag.Uint("offset", 0, "Offset")
-	limitFlag   = flag.Uint("limit", 20, "Limit")
+	groupFlag   = flag.Int("g", 0, "Search by group ID. Run './connpass groups get' to show groups")
+	offsetFlag  = flag.Int("offset", 0, "Offset")
+	limitFlag   = flag.Int("limit", 20, "Limit")
 	orderFlag   = flag.String("order", "created", "created/date/updated. Default: created")
 )
 
@@ -66,7 +66,6 @@ func main() {
 		OrderFlag: *orderFlag,
 	}
 	option = normalizeOption(option)
-	fmt.Println(option)
 
 	response, err := gonnpass.Search(option)
 	if err != nil {

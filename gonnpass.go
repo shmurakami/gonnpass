@@ -8,35 +8,36 @@ import (
 	"io"
 	"encoding/json"
 	"net/url"
+	"strconv"
 )
 
-var Order = map[string]uint{
+var Order = map[string]int{
 	"update":  1,
 	"date":    2,
 	"created": 3,
 }
 
 type Option struct {
-	Id        uint
+	Id        int
 	Keyword   string
 	Month     string
 	Date      string
 	Name      string
 	Owner     string
 	Group     Group
-	GroupFlag uint
-	Offset    uint
-	Limit     uint
+	GroupFlag int
+	Offset    int
+	Limit     int
 	OrderFlag string
-	Order     uint
+	Order     int
 }
 
 type Group struct {
-	Id   uint
+	Id   int
 	Name string
 }
 
-func Search(option Option) ([]interface{}, error) {
+func Search(option Option) (interface{}, error) {
 	query, err := parseOption(option)
 	if err != nil {
 		return nil, err
@@ -62,9 +63,10 @@ func Search(option Option) ([]interface{}, error) {
 		bout.Close()
 	}
 	//body := resp.String()
-	var result []interface{}
-	err = json.Unmarshal(resp.Bytes(), result)
+	var result interface{}
+	err = json.Unmarshal(resp.Bytes(), &result)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
 	return result, nil
@@ -75,7 +77,7 @@ func parseOption(o Option) (string, error) {
 
 	// TODO have mapping of option field and url key name
 	if o.Id != 0 {
-		q.Add("event_id", string(o.Id))
+		q.Add("event_id", strconv.Itoa(o.Id))
 	}
 	if o.Keyword != "" {
 		q.Add("keyword", o.Keyword)
@@ -93,16 +95,16 @@ func parseOption(o Option) (string, error) {
 		q.Add("owner_nickname", o.Owner)
 	}
 	if o.Group.Id != 0 {
-		q.Add("series_id", string(o.Group.Id))
+		q.Add("series_id", strconv.Itoa(o.Group.Id))
 	}
 	if o.Offset != 0 {
-		q.Add("start", string(o.Offset))
+		q.Add("start", strconv.Itoa(o.Offset))
 	}
 	if o.Limit != 0 {
-		q.Add("count", string(o.Limit))
+		q.Add("count", strconv.Itoa(o.Limit))
 	}
 	if o.Order != 0 {
-		q.Add("", string(o.Order))
+		q.Add("order", strconv.Itoa(o.Order))
 	}
 
 	return q.Encode(), nil
