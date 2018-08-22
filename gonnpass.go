@@ -37,19 +37,19 @@ type Group struct {
 	Name string
 }
 
-func Search(option Option) (interface{}, error) {
+func Search(option Option) (Response, error) {
 	query, err := parseOption(option)
 	if err != nil {
-		return nil, err
+		return Response{}, err
 	}
 
 	u := fmt.Sprintf("%s?%s", Url, query)
 	res, err := http.Get(u)
 	if err != nil {
-		return nil, err
+		return Response{}, err
 	}
 	if res.StatusCode != 200 {
-		return nil, errors.New("http status code is not success")
+		return Response{}, errors.New("http status code is not success")
 	}
 
 	var resp bytes.Buffer
@@ -58,18 +58,18 @@ func Search(option Option) (interface{}, error) {
 	if bout != nil {
 		_, err := io.Copy(&resp, bout)
 		if err != nil {
-			return nil, errors.New("failed to read response bout")
+			return Response{}, errors.New("failed to read response bout")
 		}
 		bout.Close()
 	}
 	//body := resp.String()
-	var result interface{}
-	err = json.Unmarshal(resp.Bytes(), &result)
+	var response Response
+	err = json.Unmarshal(resp.Bytes(), &response)
 	if err != nil {
 		fmt.Println(err.Error())
-		return nil, err
+		return Response{}, err
 	}
-	return result, nil
+	return response, nil
 }
 
 func parseOption(o Option) (string, error) {

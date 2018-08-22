@@ -8,26 +8,11 @@ import (
 )
 
 /*
-gonnpass
-just curl wrapper
-https://connpass.com/about/api/
-
-./gonnpass (get) (options)
-get
-  parse arguments
-  -i --id event_id
-  -k --keyword keyword
-  -m --month ym 201808
-  -d --date ymd 20180831
-  -n --name nickname
-  -o --owner owner_nickname
-  -g --group series_id
-  --offset start 1
-  --order updated/date/created order 3
-  --limit count 10 20?
-
 TODO use go-flags instead https://godoc.org/github.com/jessevdk/go-flags
-
+TODO flag to hide passed events
+TODO color
+TODO loading dialog
+TODO save group
 
 ./gonnpass groups [get|set|rm]
 groups
@@ -45,7 +30,8 @@ var (
 	groupFlag   = flag.Int("g", 0, "Search by group ID. Run './connpass groups get' to show groups")
 	offsetFlag  = flag.Int("offset", 0, "Offset")
 	limitFlag   = flag.Int("limit", 20, "Limit")
-	orderFlag   = flag.String("order", "created", "created/date/updated. Default: created")
+	orderFlag   = flag.String("order", "created", "created|date|updated. Default: created")
+	formatFlag  = flag.String("format", "json", "json|parsed. Default: json")
 )
 
 func main() {
@@ -72,7 +58,11 @@ func main() {
 		log.Fatal("failed to request to connpass api")
 	}
 
-	fmt.Println(response)
+	r, err := response.Format(*formatFlag)
+	if err != nil {
+		log.Fatal("failed to parse response")
+	}
+	fmt.Println(r)
 }
 
 func normalizeOption(option gonnpass.Option) gonnpass.Option {
