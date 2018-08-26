@@ -5,6 +5,8 @@ import (
 	"github.com/shmurakami/gonnpass"
 	"fmt"
 	"log"
+	"encoding/json"
+	"strings"
 )
 
 /*
@@ -58,11 +60,10 @@ func main() {
 		log.Fatal("failed to request to connpass api")
 	}
 
-	r, err := response.Format(*formatFlag)
+	err = output(response, *formatFlag)
 	if err != nil {
-		log.Fatal("failed to parse response")
+		log.Fatal(err)
 	}
-	fmt.Println(r)
 }
 
 func normalizeOption(option gonnpass.Option) gonnpass.Option {
@@ -83,4 +84,40 @@ func normalizeOption(option gonnpass.Option) gonnpass.Option {
 	}
 
 	return option
+}
+
+func output(r gonnpass.Response, f string) error {
+	if f == "json" {
+		b, err := json.Marshal(r)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(b))
+		return nil
+	}
+
+	outputParsed(r)
+	return nil
+}
+
+func outputParsed(r gonnpass.Response) {
+	var sb strings.Builder
+
+	for _, e := range r.Events {
+		sb.WriteString(fmt.Sprintf("Event ID:	 %d\n", e.EventId))
+		sb.WriteString(fmt.Sprintf("Title:		 %s\n", e.Title))
+		sb.WriteString(fmt.Sprintf("Summary:	 %s\n", e.Catch))
+		sb.WriteString(fmt.Sprintf("Address:	 %s | %s\n", e.Place, e.Address))
+		sb.WriteString(fmt.Sprintf("Date:		 %s\n", e.StartedAt))
+		sb.WriteString(fmt.Sprintf("Attendees:	 %d/%d (%d)\n", e.Accepted, e.Limit, e.Waiting))
+		if e.Series.Id != 0 {
+			s := e.Series
+			sb.WriteString(fmt.Sprintf("Group:		 %sb (%d)\n", s.Title, s.Id))
+		}
+		if e.HashTag != "" {
+			sb.WriteString(fmt.Sprintf("hash tag:	 #%s\n", e.HashTag))
+		}
+		sb.WriteString(fmt.Sprintf("\n"))
+	}
+	fmt.Println(sb.String())
 }
