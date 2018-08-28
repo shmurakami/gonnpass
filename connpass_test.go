@@ -77,10 +77,6 @@ func TestResponseUnmarshal(t *testing.T) {
 		t.Fatal("failed to parse to response");
 	}
 
-	if res.ResultsReturned != 2 {
-		t.Fatalf("failed to parse. ResultsReturned %d is not identical to 2", res.ResultsReturned)
-	}
-
 	if res.Events[0].EventId != 94102 {
 		t.Fatalf("failed to parse. EventId %d is not identical to 94102 ", res.Events[0].EventId)
 	}

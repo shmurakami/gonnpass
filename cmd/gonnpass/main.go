@@ -11,7 +11,6 @@ import (
 
 /*
 TODO use go-flags instead https://godoc.org/github.com/jessevdk/go-flags
-TODO flag to hide passed events
 TODO color
 TODO loading dialog
 TODO save group
@@ -34,6 +33,7 @@ var (
 	limitFlag   = flag.Int("limit", 20, "Limit")
 	orderFlag   = flag.String("order", "created", "created|date|updated. Default: created")
 	formatFlag  = flag.String("format", "json", "json|parsed. Default: json")
+	passedFlag  = flag.Bool("p", false, "Show passed event")
 )
 
 func main() {
@@ -52,6 +52,7 @@ func main() {
 		Limit:     *limitFlag,
 		Order:     gonnpass.Order["created"],
 		OrderFlag: *orderFlag,
+		Passed:    *passedFlag,
 	}
 	option = normalizeOption(option)
 

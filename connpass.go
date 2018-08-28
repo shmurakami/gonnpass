@@ -4,10 +4,7 @@ package gonnpass
 var Url = "https://connpass.com/api/v1/event/"
 
 type Response struct {
-	ResultsReturned  int             `json:"ResultsReturned"`
-	Events           []ResponseEvent `json:"events"`
-	ResultsStart     int             `json:"results_start"`
-	ResultsAvailable int             `json:"results_available"`
+	Events []ResponseEvent `json:"events"`
 }
 
 type ResponseEvent struct {

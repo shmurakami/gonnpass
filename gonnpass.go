@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"net/url"
 	"strconv"
+	"time"
+	"log"
 )
 
 var Order = map[string]int{
@@ -30,12 +32,15 @@ type Option struct {
 	Limit     int
 	OrderFlag string
 	Order     int
+	Passed    bool
 }
 
 type Group struct {
 	Id   int
 	Name string
 }
+
+var now = time.Now().Unix()
 
 func Search(option Option) (Response, error) {
 	query, err := parseOption(option)
@@ -68,6 +73,9 @@ func Search(option Option) (Response, error) {
 	if err != nil {
 		fmt.Println(err.Error())
 		return Response{}, err
+	}
+	if (!option.Passed) {
+		response = filterPassed(response)
 	}
 	return response, nil
 }
@@ -108,4 +116,22 @@ func parseOption(o Option) (string, error) {
 	}
 
 	return q.Encode(), nil
+}
+
+func filterPassed(r Response) Response {
+	var events []ResponseEvent
+	for _, e := range r.Events {
+		sAt := e.StartedAt
+		t, err := time.Parse(time.RFC3339, sAt)
+		if err != nil {
+			log.Println("failed to parse time")
+			continue
+		}
+
+		if t.Unix() > now {
+			events = append(events, e)
+		}
+	}
+	r.Events = events
+	return r
 }
